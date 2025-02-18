@@ -1,7 +1,5 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from pathlib import Path
-from typing import Callable, Union
 
 class Elastoplastic:
   def __init__(self, E, H, Y_0):
