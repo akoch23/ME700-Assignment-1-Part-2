@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from hardening_model import Elastoplastic
 
 material = Elastoplastic (E, H, Y_0)
-strain_incr = np.linspace(0. 0.05, 100)
+strain_incr = np.linspace(0, 0.05, 100)
 stress_values = []
 plastic_strain_values = []
 
