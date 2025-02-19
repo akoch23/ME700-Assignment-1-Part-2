@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from hardening_model import Elastoplastic
+from hardening_model.py import Elastoplastic
 
 """
 material = Elastoplastic (E, H, Y_0)
