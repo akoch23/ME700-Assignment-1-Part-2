@@ -30,9 +30,6 @@ class Elastoplastic:
     self.alpha_n = 0
     self.hardening_type = hardening_type
 
-  def compute_yield_stress(self):
-    return self.Y_0 + self.H * self.epsilon_p_n
-
   def elastic_predictor(self, delta_epsilon):
     return self.E * delta_epsilon
 
@@ -40,52 +37,43 @@ class Elastoplastic:
     delta_sigma_trial = self.elastic_predictor(delta_epsilon)
     sigma_trial = self.sigma_n + delta_sigma_trial
 
-    if self.hardening_type == "Isotropic" or self.hardening_type == "Both":
-      Y_n = self.compute_yield_stress()
-    else:
-      Y_n = self.Y_0
+    if self.hardening_type == "Isotropic":
+      Y_n = self.Y_0 + self.H * self.epsilon_p_n
+      phi_trial_iso = np.linalg.norm(sigma_trial) - Y_n
 
-    if self.hardening_type == "Kinematic" or self.hardening_type == "Both":
-            alpha_trial = self.alpha_n
-        else:
-            alpha_trial = 0
-          
-    if self.hardening_type == "Isotropic" or self.hardening_type == "Both":
-      phi_trial = np.linalg.norm(sigma_trial) - Y_n
-      
-    else:
+    if self.hardening_type == "Kinematic":
+      alpha_trial = self.alpha_n
       nu_trial = sigma_trial - alpha_trial
-      phi_trial = np.linalg.norm(nu_trial) - Y_n
+      phi_trial_kin = np.linalg.norm(nu_trial) - Y_n
+       
     
-    if phi_trial <= 0:
+    if phi_trial <= 0: # Material is still undergoing Elastic Deformation
       sigma_new = sigma_trial
-      alpha_new = self.alpha_n
       epsilon_p_new = self.epsilon_p_n
+      alpha_new = self.alpha_n
       Y_new = self.compute_yield_stress()
       
-    else:
+    else: # Material is yielding/undergoing Plastic Deformation
       delta_epsilon_p = phi_trial / (self.E + self.H)
 
-      if self.hardening_type == "Isotropic" or self.hardening_type == "Both":
+      if self.hardening_type == "Isotropic":
         sigma_new = sigma_trial - np.sign(np.linalg.norm(sigma_trial)) * self.E * delta_epsilon_p
-      else:
+        
+
+      if self.hardening_type == "Kinematic":
         sigma_new = sigma_trial - np.sign(nu_trial) * self.E * delta_epsilon_p
-
-      if self.hardening_type == "Kinematic" or self.hardening_type == "Both":
         alpha_new = self.alpha_n + np.sign(nu_trial) * self.H * delta_epsilon_p
-      else:
-        alpha_new = self.alpha_n
-
-      if self.hardening_type == "Isotropic" or self.hardening_type == "Both":
-        Y_new = self.Y_0 + self.H * self.epsilon_p_n
-      else:
-        Y_new = self.Y_0
-
-      epsilon_p_new = self.epsilon_p_n + delta_epsilon_p
+        
+    epsilon_p_new = self.epsilon_p_n + delta_epsilon_p
 
     self.sigma_n = sigma_new
     self.alpha_n = alpha_new
     self.Y_n = Y_new
     self.epsilon_p_n = epsilon_p_new
-    
-    return sigma_new, epsilon_p_new
+
+    if self.hardening_type == "Isotropic":
+      return sigma_new, epsilon_p_new
+
+    if self.hardening_type == "Kinematic":
+      return sigma_new, alpha_new, epsilon_p_new
+
