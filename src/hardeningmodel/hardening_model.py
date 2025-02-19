@@ -41,23 +41,28 @@ class Elastoplastic:
     sigma_trial = self.sigma_n + delta_sigma_trial
 
     if self.hardening_type == "Isotropic" or self.hardening_type == "Both":
-      Y_trial = self.compute_yield_stress()
+      Y_n = self.compute_yield_stress()
     else:
-      Y_trial = self.Y_0
+      Y_n = self.Y_0
 
     if self.hardening_type == "Kinematic" or self.hardening_type == "Both":
             alpha_trial = self.alpha_n
         else:
             alpha_trial = 0
           
-    nu_trial = sigma_trial - alpha_trial 
-    phi_trial = np.linalg.norm(nu_trial) - Y_0
+    if self.hardening_type == "Isotropic" or self.hardening_type == "Both":
+      phi_trial = np.linalg.norm(sigma_trial) - Y_n
+      
+    else:
+      nu_trial = sigma_trial - alpha_trial
+      phi_trial = np.linalg.norm(nu_trial) - Y_n
     
     if phi_trial <= 0:
       sigma_new = sigma_trial
       alpha_new = self.alpha_n
       epsilon_p_new = self.epsilon_p_n
       Y_new = self.compute_yield_stress()
+      
     else:
       delta_epsilon_p = phi_trial / (self.E + self.H)
 
