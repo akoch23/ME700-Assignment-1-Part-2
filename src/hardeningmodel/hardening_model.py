@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from dataclasses import dataclass
 
+'''
 hardening_type = input("Please enter which type of hardening model you would like to use for your chosen material: ")
 
 try:
@@ -16,6 +17,7 @@ try:
     model_iso = True
   else:
     raise error
+'''
 
 @dataclass
 class Elastoplastic:
