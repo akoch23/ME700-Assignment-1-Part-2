@@ -16,6 +16,10 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
+    "matplotlib==3.10.0",
+    "numpy==1.26.4",
+    "pytest==7.1.2",
+    "pytest-cov==3.0.0",
 ]
 
 [project.urls]
