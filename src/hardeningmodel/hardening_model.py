@@ -1,32 +1,51 @@
 import matplotlib.pyplot as plt
 import numpy as np
+from dataclasses import dataclass
 
+hardening_type = input("Please enter which type of hardening model you would like to use for your chosen material: ")
+
+try:
+  if hardening_type = "Isotropic":
+    model_iso = True
+    model_kin = False
+  elif hardening_type = "Kinematic":
+    model_kin = True
+    model_iso = False
+  elif hardening_type = "Both":
+    model_kin = True
+    model_iso = True
+  else:
+    raise error
+
+@dataclass
 class Elastoplastic:
-  def __init__(self, E, H, Y_0):
+  def __init__(self, E: float, H: float, Y_0: float):
     self.E = E
     self.H = H
     self.Y_0 = Y_0
     self.sigma_n = 0
     self.epsilon_p_n = 0
 
-  def elastic_stress(self, epsilon):
-    return self.E * epsilon
+  def compute_yield_stress(self):
+    return self.Y_0 + self.H * self.epsilon_p_n
 
-  def accumulated_plastic_strain(self, delta_epsilon_p):
-    return np.linalg.norm(delta_epsilon_p)
+  def elastic_predictor(self, delta_epsilon):
+    return self.E * delta_epsilon
 
-  def update_stress(self, delta_epsilon):
-    sigma_e = self.elastic_stress(delta_epsilon)
-    Y = self.Y_0 + self.H * self.epsilon_p_n
+  def check_state(self, delta_epsilon):
+    delta_sigma_trial = self.elastic_predictor(delta_epsilon)
+    sigma_trial = self.sigma_n + delta_sigma_trial
 
-  if np.linalg.norm(self.sigma_n) > Y:
-    delta_epsilon_p = delta_epsilon - (self.sigma_n / self.E)
-    self.epsilon_p_n += self.accumulated_plastic_strain(delta_epsilon_p)
-    sigma_new = self.sigma_n - (self.sigma_n / np.linalg.norm(self.sigma_n)) * (np.linalg.norm(self.sigma_n) - Y)
+    Y_n = self.compute_yield_stress()
 
-  else:
-    self.epsilon_p_n += 0
-    sigma_new = sigma_e
+    phi_trial = np.linalg.norm(sigma_trial) - Y_n
 
-  self.sigma_n = sigma_new
-  return sigma_new, self.epsilon_p_n
+    if phi_trial <= 0:
+      sigma_new = sigma_trial
+      epsilon_p_new = self.epsilon_p_n
+    else:
+      delta_epsilon_p = phi_trial / (self.E + self.H)
+      sigma+new = sigma_trial - np.sign(np.linalg.norm(sigma_trial)) * self.E * delta_epsilon_p
+      epsilon_p_new = self.epsilon_p_n + delta_epsilon_p
+    return sigma_new, epsilon_p_new
+
