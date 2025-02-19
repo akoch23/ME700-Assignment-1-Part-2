@@ -6,13 +6,13 @@ from dataclasses import dataclass
 hardening_type = input("Please enter which type of hardening model you would like to use for your chosen material: ")
 
 try:
-  if hardening_type = "Isotropic":
+  if hardening_type == "Isotropic":
     model_iso = True
     model_kin = False
-  elif hardening_type = "Kinematic":
+  elif hardening_type == "Kinematic":
     model_kin = True
     model_iso = False
-  elif hardening_type = "Both":
+  elif hardening_type == "Both":
     model_kin = True
     model_iso = True
   else:
@@ -47,7 +47,6 @@ class Elastoplastic:
       epsilon_p_new = self.epsilon_p_n
     else:
       delta_epsilon_p = phi_trial / (self.E + self.H)
-      sigma+new = sigma_trial - np.sign(np.linalg.norm(sigma_trial)) * self.E * delta_epsilon_p
+      sigma_new = sigma_trial - np.sign(np.linalg.norm(sigma_trial)) * self.E * delta_epsilon_p
       epsilon_p_new = self.epsilon_p_n + delta_epsilon_p
     return sigma_new, epsilon_p_new
-
