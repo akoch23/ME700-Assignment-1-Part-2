@@ -1,4 +1,4 @@
-There are several files that you will need as they comprise the newton's model solver for the first part of Assignment 1.
+There are several files that you will need as they comprise the newton's model solver for the second part of Assignment 1.
 
 The first file, contained in the src/newtonsmethod folder, is "solver_main", which contains the algorithm for newton's method. In the file, users will be asked to input:
 
