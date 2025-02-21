@@ -1,4 +1,4 @@
-# Newton's Method Solver
+# Elastoplastic Hardening Model
 
 [![python](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/)
 ![os](https://img.shields.io/badge/os-ubuntu%20|%20macos%20|%20windows-blue.svg)
@@ -6,9 +6,9 @@
 
 
 
-### Newton's Method Algorithm
+### Elastoplastic Hardening Model Algorithm
 
-**Newton's Method** is another numerial technique for finding the roots of a continuous function f(x). This method works by taking an initial guess (x_0), and uses the function f(x) and it's derivative f'(x) to iteratively estimate a value near the root until the actual root value is found (with sufficient accuracy witin some tolerance value).
+**Elastoplastic Hardening Model** is a mathematical model for approximating and visualing the stress/strain behavior of a material undergoing elastic and plastric strain/hardening. 
 
 
 
