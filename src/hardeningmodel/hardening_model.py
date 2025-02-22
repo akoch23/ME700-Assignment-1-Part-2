@@ -16,9 +16,9 @@ try:
   else:
     raise ValueError ("Invalid Hardening Type.")
 '''
-
+# Elastoplastic Base Class
 class Elastoplastic:
-    def __init__(self, E: float, H: float, Y_0: float):
+    def __init__(self, E: float, H: float, Y_0: float): # Initialize material property/state variables
         self.E = E  # Elastic modulus
         self.H = H  # Hardening modulus
         self.Y_0 = Y_0  # Initial yield stress
@@ -26,19 +26,20 @@ class Elastoplastic:
         self.epsilon_p_n = 0  # Initial plastic strain
         self.alpha_n = 0  # Kinematic hardening state variable
         
-    def yield_stress(self):
+    def yield_stress(self): # Function containing current yield stress formula
         Y_n = self.Y_0 + self.H * self.epsilon_p_n
         return Y_n
     
-    def hardening_model(self, strain_change):
-        stress_list = []
-        strain_list = []
-        for i, epsilon_n in enumerate(strain_change):
-            if i == 0:
+    def hardening_model(self, strain_change): # Main data collection function that appends stress and strain values calculated from later classes/functions to lists which will be used for graphing.
+        stress_list = [] # List of stress values calculated at each strain increment
+        strain_list = [] # List of strain values that will be defined by user
+        for i, epsilon_n in enumerate(strain_change): # Loop over each strain step and calculate corresponding stress
+            if i == 0: # IMPORTANT: At first step the stress remains at its initial value
                 stress_list.append(self.sigma_n)
                 continue
             delta_epsilon_n = epsilon_n - strain_change[i-1]
-            if np.isclose(delta_epsilon_n, 0):
+          
+            if np.isclose(delta_epsilon_n, 0): # Skip value if the strain change is close to zero (no change in strain)
                 stress_list.append(self.sigma_n)
                 continue
             self.step_forward(delta_epsilon_n)
@@ -46,12 +47,12 @@ class Elastoplastic:
             strain_list.append(self.epsilon_p_n)
         return stress_list
 
-class Isotropic(Elastoplastic):
-    def phi_trial(self, sigma_trial, Y_n):
+class Isotropic(Elastoplastic): # Sub-class of Elastoplastic that defines operations for Isotropic Hardening model
+    def phi_trial(self, sigma_trial, Y_n): # Trial Yield function value
         phi_trial = np.abs(sigma_trial) - Y_n
         return phi_trial
 
-    def check_phi_trial(self, phi_trial, sigma_trial):
+    def check_phi_trial(self, phi_trial, sigma_trial): # Key function that verifies previous Trial Yield function and which will be used to predict if the material remains elastic or has begun to yield
         if phi_trial <= 0: # material deformation is still elastic
             self.sigma_n = sigma_trial
             self.epsilon_p_n = self.epsilon_p_n
@@ -60,7 +61,7 @@ class Isotropic(Elastoplastic):
             self.sigma_n = sigma_trial - np.sign(sigma_trial) * self.E * delta_epsilon
             self.epsilon_p_n = self.epsilon_p_n + delta_epsilon
             
-    def step_forward(self, delta_epsilon):
+    def step_forward(self, delta_epsilon): # Function that performs elastic predictor step and returns updated stress and trial stress values
         Y_n = self.yield_stress()
         delta_sigma_trial = self.E * delta_epsilon
         sigma_trial = self.sigma_n + delta_sigma_trial
@@ -68,7 +69,7 @@ class Isotropic(Elastoplastic):
         self.check_phi_trial(phi_trial,sigma_trial)
    # How to return mapping?
 
-class Kinematic(Elastoplastic):
+class Kinematic(Elastoplastic): # Sub-class of Elastoplastic that defines operations for Kinematic Hardening model
     def __init__(self, E, H, Y_0, alpha_n):
         super().__init__(E, H, Y_0, alpha_n)
         
@@ -84,7 +85,7 @@ class Kinematic(Elastoplastic):
             self.alpha_n = self.alpha_n + np.sign(eta_trial) * self.H * delta_epsilon
             self.epsilon_p_n = self.epsilon_p_n + delta_epsilon
 
-        def step_forward(self, delta_epsilon):
+        def step_forward(self, delta_epsilon): # Function that performs elastic predictor step and returns updated stress, trial stress, and back stress values
         # Elastic predictor step with sigma trial
             sigma_trial = self.sigma_n + self.E * delta_epsilon
             alpha_trial = self.alpha_n
