@@ -1,3 +1,4 @@
+
 # This workflow will install Python dependencies, run tests, lint with a single version of Python, and upload a coverage report to Codecov
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
 
@@ -17,7 +18,7 @@ jobs:
 
     strategy:
       matrix:
-        platform: [windows-latest]
+        platform: [macos-latest, ubuntu-latest, windows-latest]
         python-version: ["3.12.9"]
     
     steps:
@@ -38,7 +39,7 @@ jobs:
       run: pip install pytest pytest-cov
       
     - name: Run tests with Codecov coverage report
-      run: pytest --cov=newtonsmethod --cov-report=xml
+      run: pytest --cov=src/newtonsmethod --cov-report=xml
       
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v5
