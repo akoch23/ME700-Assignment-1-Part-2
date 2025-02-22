@@ -41,7 +41,7 @@ pip install -e .
 
 Test that the code is working with pytest:
 ```bash
-pytest -v --cov-hardening_solver --cov-report term-missing
+pytest -v --cov-hardening_model --cov-report term-missing
 ```
 
 Code coverage should be 100%
