@@ -84,7 +84,7 @@ class Kinematic(Elastoplastic):
             self.alpha_n = self.alpha_n + np.sign(eta_trial) * self.H * delta_epsilon
             self.epsilon_p_n = self.epsilon_p_n + delta_epsilon
 
-        def step_foward(self, delta_epsilon):
+        def step_forward(self, delta_epsilon):
         # Elastic predictor step with sigma trial
             sigma_trial = self.sigma_n + self.E * delta_epsilon
             alpha_trial = self.alpha_n
