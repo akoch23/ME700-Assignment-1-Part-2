@@ -1,46 +1,44 @@
 import numpy as np
-import matplotlib.pyplot as plt
-from hardeningmodel.py import Elastoplastic
+from hardening_model import Isotropic
+import pytest
 
-"""
-material = Elastoplastic (E, H, Y_0)
-strain_incr = np.linspace(0, 0.05, 100)
-stress_values = []
-plastic_strain_values = []
+def Isotropic_test():
+    E = 1000
+    E_t = 100
+    H = (E*E_t)/(E-E_t)
+    return IH(E=E, H = H, Y_0 = 10)
 
-for delta_epsilon in strain_increment:
-  sigma_new, epsilon_p_new = material.check_state(delta_epsilon)
-  stress_values.append(np.linalg.norm(sigma_new))
-  plastic_strain_values.append(epsilon_p_new)
-"""
+def Kinematic_test():
+    E = 1000
+    E_t = 100
+    H = (E*E_t)/(E-E_t)
+    return KH(E=E, H = H, Y_0 = 10)
 
-steel = Elastoplastic(210, 2.10, 0.250)
-strain_incr = np.linspace(0, 0.05, 100)
-stress_values = []
-plastic_strain_values = []
+def test_yield_stress(Isotropic_test):
+    found = Isotropic_test.yield_stress()
+    known = 10
+    assert known == found
 
-for delta_epsilon in strain_increment:
-  sigma_new, epsilon_p_new = steel.check_state(delta_epsilon)
-  stress_values.append(np.linalg.norm(sigma_new))
-  plastic_strain_values.append(epsilon_p_new)
+def test_phi_trial(Isotropic_test):
+    found = Isotropic_test.phi_trial(20,10)
+    known = 10
+    assert known == found
 
-def test_isotropic_steel():
-  test_steel = steel
-  assert True
+def yield_check(Isotropic_test):
+    #founde = Isotropic_test.check_phi_trial(phi_trial = -2.5,sigma_trial = 7.5)
+    #knowne = 7.5#,0
+    Isotropic_test.check_phi_trial(phi_trial = 10, sigma_trial = 20)
+    known = 11#,0.005
+    assert np.isclose(known, Isotropic_test.sigma_n)
 
-"""
-plt.plot(strain_increments, stress_values, label="Stress")
-plt.xlabel("Strain")
-plt.ylabel("Stress")
-plt.title("Stress vs. Strain Curve")
-plt.grid(True)
-plt.legend()
-plt.show()
+def test_step(Isotropic_test):
+    Isotropic_test.step_forward(delta_epsilon = 0.02)
+    assert np.isclose(Isotropic_test.sigma_n, 11)
 
-plt.plot(strain_increments, plastic_strain_values, label="Plastic Strain", color='r')
-plt.xlabel("Strain")
-plt.ylabel("Plastic Strain")
-plt.title("Plastic Strain vs Strain")
-plt.grid(True)
-plt.legend()
-"""
+def test_model(Isotropic_test):
+    epsilon = np.array([0,0,0.001001001001001001])
+    found = Isotropic_test.hardening_model(epsilon)
+    known = np.array([0,0,1.0010010010010015])
+    assert np.allclose(known, found,atol=1e-15)
+
+# Testing equivalent for Kinematic
