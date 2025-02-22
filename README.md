@@ -72,6 +72,3 @@ Code coverage should be 100%
 * *src/hardeningmodel/hardening_model.py*: Contains main functions for iteratively calculating stress values based on input strain values and selected hardening mode (model type).
 * *tests/test_hardening_model.py*: Test commands for main file *hardening_model*
 * *tutorial/tutorial_hardeningmodel.py*: Tutorial file containing six example problems that can be copied and run
-```
-
-Code coverage should be 100%
