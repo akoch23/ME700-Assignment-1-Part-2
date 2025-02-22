@@ -41,6 +41,11 @@ pip install -e .
 
 Test that the code is working with pytest:
 ```bash
+pytest -v --cov=newtonsmethod --cov-report term-missing
+```
+
+Code coverage should be 100%
+
 
 ## Solver Description
 
